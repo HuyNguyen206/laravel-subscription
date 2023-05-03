@@ -28,9 +28,10 @@
                                             Resume subscription
                                         </a>
                                     @endcan
-
                                 @endif
-
+                                <a href="{{route('subscription.invoices')}}" class="{{\request()->routeIs('subscription.invoices') ? 'font-semibold' : ''}} hs-tab-active:border-blue-500 hs-tab-active:text-blue-600 dark:hs-tab-active:text-blue-600 py-1 pr-4 inline-flex items-center gap-2 border-r-[3px] border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 dark:hover:text-gray-300" id="vertical-tab-with-border-item-2" data-hs-tab="#vertical-tab-with-border-2" aria-controls="vertical-tab-with-border-2" role="tab">
+                                    Invoices
+                                </a>
                             </nav>
                         </div>
 

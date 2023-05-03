@@ -10,6 +10,17 @@ use Illuminate\Validation\Rule;
 class CheckoutController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(function (Request $request, \Closure $next, string ...$guards){
+            if ($request->user()->subscribed('default')) {
+                return redirect()->route('subscription.index');
+            }
+
+            return $next($request);
+        });
+    }
+
     public function checkout(Request $request)
     {
         return view('subscriptions.checkout', ['clientSecret' => $request->user()->createSetupIntent()->client_secret]);

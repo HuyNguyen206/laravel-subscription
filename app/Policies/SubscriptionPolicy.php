@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Laravel\Cashier\Subscription;
 
 class SubscriptionPolicy
 {
@@ -15,13 +14,13 @@ class SubscriptionPolicy
         //
     }
 
-    public function resumeSubscription(User $user, Subscription $subscription)
+    public function resumeSubscription(User $user)
     {
-        return $subscription->canceled();
+        return $user->subscription()->canceled();
     }
 
-    public function cancelSubscription(User $user, Subscription $subscription)
+    public function cancelSubscription(User $user)
     {
-        return !$subscription->canceled();
+        return !$user->subscription()->canceled();
     }
 }

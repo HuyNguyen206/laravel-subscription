@@ -33,6 +33,9 @@ Route::middleware('auth')->group(function () {
         Route::post('subscription/cancel', [\App\Http\Controllers\Subscriptions\SubscriptionController::class, 'cancel'])->name('subscription.cancel');
         Route::get('subscription/resume', [\App\Http\Controllers\Subscriptions\SubscriptionController::class, 'showFormResume'])->name('subscription.resume');
         Route::post('subscription/resume', [\App\Http\Controllers\Subscriptions\SubscriptionController::class, 'resume'])->name('subscription.resume');
+        Route::get('subscription/invoices', [\App\Http\Controllers\Subscriptions\SubscriptionController::class, 'getInvoices'])->name('subscription.invoices');
+        Route::get('subscription/invoices/download/{invoiceId}', [\App\Http\Controllers\Subscriptions\SubscriptionController::class, 'downloadInvoice'])->name('subscription.invoices.download');
+
     });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
