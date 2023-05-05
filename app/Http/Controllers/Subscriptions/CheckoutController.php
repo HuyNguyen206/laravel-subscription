@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Subscriptions;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
+use App\Rules\CouponValid;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CheckoutController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware(function (Request $request, \Closure $next, string ...$guards){
@@ -30,13 +30,18 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'token' => 'required',
-            'plan' => ['sometimes', Rule::in(['monthly', 'yearly', 'forever'])]
+            'plan' => ['sometimes', Rule::in(['monthly', 'yearly', 'forever'])],
+            'coupon' => ['sometimes', new CouponValid()]
         ]);
 
         $plan = $request->get('plan', 'monthly');
         $plan = Plan::whereSlug($plan)->first();
+        $newSubscription = $request->user()->newSubscription('default', $plan->stripe_id);
 
-        $request->user()->newSubscription('default', $plan->stripe_id)->create($request->token);
+        if ($request->coupon) {
+            $newSubscription = $newSubscription->withCoupon($request->coupon);
+        }
+        $newSubscription->create($request->token);
 
         return back();
     }

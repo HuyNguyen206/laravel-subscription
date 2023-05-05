@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Subscriptions;
 
 use App\Http\Controllers\Controller;
+use App\Rules\CouponValid;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Subscription;
 
@@ -63,5 +64,39 @@ class SubscriptionController extends Controller
             'vendor' => config('app.name'),
             'product' => 'Membership'
         ]);
+    }
+
+    public function showUpdatePaymentMethodForm(Request $request)
+    {
+        return view('subscriptions.update-card', ['clientSecret' => $request->user()->createSetupIntent()->client_secret]);
+    }
+
+    public function updatePaymentMethod(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+        ]);
+
+        $request->user()->updateDefaultPaymentMethod($request->token);
+
+        return redirect()->route('subscription.index');
+    }
+
+    public function showApplyCouponForm()
+    {
+        return view('subscriptions.apply-coupon');
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon' => ['required', new CouponValid()]
+        ]);
+
+        $request->user()->subscription()->updateStripeSubscription([
+            'coupon' => $request->coupon
+        ]);
+
+        return redirect()->route('subscription.index');
     }
 }

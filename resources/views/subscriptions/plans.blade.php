@@ -13,7 +13,7 @@
                     <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                         @foreach($plans as $plan)
                             <li>
-                                <a href="{{route('checkout', ['plan' => $plan->slug])}}">{{$plan->title}}</a>
+                                <a href="{{route('checkout', ['plan' => $plan->slug])}}">{{$plan->title}} / {{$plan->price}} (USD)</a>
                             </li>
                         @endforeach
                     </ul>

@@ -28,15 +28,18 @@ class DatabaseSeeder extends Seeder
             [
                 [
                     'title' => 'Monthly',
-                    'slug' => 'monthly'
+                    'slug' => 'monthly',
+                    'price' => 10
                 ],
                 [
                     'title' => 'Yearly',
-                    'slug' => 'yearly'
+                    'slug' => 'yearly',
+                    'price' => 50
                 ],
                 [
                     'title' => 'Forever',
-                    'slug' => 'forever'
+                    'slug' => 'forever',
+                    'price' => 300
                 ]
             ]
         );
