@@ -7,12 +7,13 @@ use App\Models\Plan;
 use App\Rules\CouponValid;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Laravel\Cashier\Exceptions\IncompletePayment;
 
 class CheckoutController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(function (Request $request, \Closure $next, string ...$guards){
+        $this->middleware(function (Request $request, \Closure $next, string ...$guards) {
             if ($request->user()->subscribed('default')) {
                 return redirect()->route('subscription.index');
             }
@@ -36,12 +37,16 @@ class CheckoutController extends Controller
 
         $plan = $request->get('plan', 'monthly');
         $plan = Plan::whereSlug($plan)->first();
-        $newSubscription = $request->user()->newSubscription('default', $plan->stripe_id);
-
-        if ($request->coupon) {
-            $newSubscription = $newSubscription->withCoupon($request->coupon);
+        try {
+            $request->user()->newSubscription('default', $plan->stripe_id)
+                ->withCoupon($request->coupon)
+                ->create($request->token);
+        } catch (IncompletePayment $ex) {
+            return redirect()->route('cashier.payment', [
+                $ex->payment->id,
+                'redirect' => route('subscription.index')
+            ]);
         }
-        $newSubscription->create($request->token);
 
         return back();
     }

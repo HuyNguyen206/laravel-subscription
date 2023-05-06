@@ -9,9 +9,10 @@ use Laravel\Cashier\Subscription;
 
 class SubscriptionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('subscriptions.index');
+        $stripeBillingPortal = $request->user()->stripe_id ? $request->user()->billingPortalUrl(route('subscription.index')) : null;
+        return view('subscriptions.index', compact('stripeBillingPortal'));
     }
 
     public function showFormCancel(Request $request)

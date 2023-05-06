@@ -5,6 +5,11 @@
                 <div class="p-6 text-gray-900">
                     Subscriptions
                 </div>
+                @isset($stripeBillingPortal)
+                <h3>
+                    <a class="text-blue-700" href="{{$stripeBillingPortal}}">Stripe Billing Portal</a>
+                </h3>
+                @endisset
 
             </div>
         </div>

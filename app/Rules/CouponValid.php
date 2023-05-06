@@ -17,6 +17,10 @@ class CouponValid implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if (!$value) {
+            return;
+        }
+
         try {
            $coupon = StripeCoupon::retrieve($value, [
                 'api_key' => config('cashier.secret'),

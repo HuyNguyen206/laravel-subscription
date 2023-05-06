@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Laravel\Cashier\Exceptions\IncompletePayment;
 
 class PlanController extends Controller
 {
@@ -26,8 +27,14 @@ class PlanController extends Controller
         $request->validate([
             'plan' => ['required', 'string', Rule::exists('plans', 'slug')]
         ]);
-
-        $request->user()->subscription()->swap(Plan::query()->whereSlug($request->plan)->value('stripe_id'));
+        try {
+            $request->user()->subscription()->swap(Plan::query()->whereSlug($request->plan)->value('stripe_id'));
+        } catch (IncompletePayment $ex) {
+            return redirect()->route('cashier.payment', [
+                $ex->payment->id,
+                'redirect' => route('subscription.index')
+            ]);
+        }
 
         return redirect()->route('subscription.index');
     }
