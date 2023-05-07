@@ -12,7 +12,14 @@ class SubscriptionController extends Controller
     public function index(Request $request)
     {
         $stripeBillingPortal = $request->user()->stripe_id ? $request->user()->billingPortalUrl(route('subscription.index')) : null;
-        return view('subscriptions.index', compact('stripeBillingPortal'));
+        $subscription = $request->user()->getStripeSubscription();
+        $invoice = $request->user()->getStripeInvoice();
+        $customer = $request->user()->getStripeCustomer();
+        $coupon = $subscription->coupon();
+
+        return view('subscriptions.index',
+            compact('stripeBillingPortal', 'subscription',
+                'invoice', 'customer', 'coupon'));
     }
 
     public function showFormCancel(Request $request)

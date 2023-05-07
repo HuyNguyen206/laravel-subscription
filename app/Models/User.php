@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Presenter\StripeCustomer;
+use App\Presenter\StripeInvoice;
+use App\Presenter\StripeSubscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -47,5 +50,32 @@ class User extends Authenticatable
     public function plan()
     {
         return $this->hasOneThrough(Plan::class, Subscription::class, 'user_id', 'stripe_id','id', 'stripe_price');
+    }
+
+    public function getStripeSubscription()
+    {
+        if (!$this->subscribed()) {
+            return;
+        }
+
+        return new StripeSubscription($this->subscription()->asStripeSubscription());
+    }
+
+    public function getStripeInvoice()
+    {
+        if (!$invoice = $this->upcomingInvoice()) {
+            return;
+        }
+
+        return new StripeInvoice($invoice->asStripeInvoice());
+    }
+
+    public function getStripeCustomer()
+    {
+        if (!$this->hasStripeId()) {
+            return;
+        }
+
+        return new StripeCustomer($this->asStripeCustomer());
     }
 }
