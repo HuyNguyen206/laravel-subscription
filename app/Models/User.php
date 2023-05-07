@@ -78,4 +78,9 @@ class User extends Authenticatable
 
         return new StripeCustomer($this->asStripeCustomer());
     }
+
+    public function isMemberOrAlreadySubscribed()
+    {
+        return $this->member || $this->subscribed();
+    }
 }

@@ -23,6 +23,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('member', [\App\Http\Controllers\MemberController::class, 'index'])->name('member.index');
     Route::get('plans', [\App\Http\Controllers\Subscriptions\PlanController::class, 'index'])->name('plans.index');
     Route::get('plans/swap', [\App\Http\Controllers\Subscriptions\PlanController::class, 'showFormSwap'])->name('plans.swap');
     Route::post('plans/swap', [\App\Http\Controllers\Subscriptions\PlanController::class, 'swap'])->name('plans.swap');
