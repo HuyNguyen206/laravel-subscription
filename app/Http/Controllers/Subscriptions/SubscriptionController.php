@@ -5,17 +5,22 @@ namespace App\Http\Controllers\Subscriptions;
 use App\Http\Controllers\Controller;
 use App\Rules\CouponValid;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Laravel\Cashier\Subscription;
 
 class SubscriptionController extends Controller
 {
     public function index(Request $request)
     {
+        if ($request->payment_intent) {
+            Session::flash('success', 'Payment accepted!');
+        }
+
         $stripeBillingPortal = $request->user()->stripe_id ? $request->user()->billingPortalUrl(route('subscription.index')) : null;
         $subscription = $request->user()->getStripeSubscription();
         $invoice = $request->user()->getStripeInvoice();
         $customer = $request->user()->getStripeCustomer();
-        $coupon = $subscription->coupon();
+        $coupon = $subscription?->coupon();
 
         return view('subscriptions.index',
             compact('stripeBillingPortal', 'subscription',

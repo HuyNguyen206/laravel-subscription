@@ -28,6 +28,16 @@ class PlanController extends Controller
             'plan' => ['required', 'string', Rule::exists('plans', 'slug')]
         ]);
         try {
+            if ($request->plan === 'lifetime') {
+                if ($request->user()->subscribed()) {
+                    $request->user()->subscription()->cancel();
+                }
+                $payment = $request->user()->pay(
+                    Plan::whereSlug('lifetime')->value('price') * 100
+                );
+
+                return view('subscriptions.lifetime-payment', ['paymentIntent' => $payment]);
+            }
             $request->user()->subscription()->swap(Plan::query()->whereSlug($request->plan)->value('stripe_id'));
         } catch (IncompletePayment $ex) {
             return redirect()->route('cashier.payment', [
