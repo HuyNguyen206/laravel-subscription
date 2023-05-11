@@ -21,7 +21,7 @@
                     <x-nav-link :href="route('account.index')" :active="request()->is('billing*')">
                         Manage Billing
                     </x-nav-link>
-                    @if(request()->user() && request()->user()->isMemberOrAlreadySubscribed())
+                    @if(request()->user() && request()->user()->isMember())
                         <x-nav-link :href="route('member.index')" :active="request()->routeIs('member.index')">
                             Member
                         </x-nav-link>

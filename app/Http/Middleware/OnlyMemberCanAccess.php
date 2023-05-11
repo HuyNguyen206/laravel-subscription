@@ -15,7 +15,7 @@ class OnlyMemberCanAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user()->isMemberOrAlreadySubscribed()) {
+        if (!$request->user()->isMember()) {
             return back();
         }
 
