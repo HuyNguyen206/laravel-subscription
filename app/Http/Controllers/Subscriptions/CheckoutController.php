@@ -28,16 +28,24 @@ class CheckoutController extends Controller
         $price = Plan::whereSlug($plan)->value('price');
 
         if ($plan === 'lifetime') {
-            $request->user()->createOrGetStripeCustomer();
-            $paymentIntent = app('stripe')->paymentIntents->create([
-                'amount' => $price * 100,
-                'currency' => 'usd',
-                'setup_future_usage' => 'on_session',
-                'metadata' => [
-                    'user_id' => (string) $request->user()->id
-                ],
-                'customer' => $request->user()->stripe_id
-            ]);
+            $user = $request->user();
+            $key = "users.{$user->id}.paymentIntent";
+            if (!$paymentIntent = session($key)) {
+                $user->createOrGetStripeCustomer();
+                $paymentIntent = app('stripe')->paymentIntents->create([
+                    'amount' => $price * 100,
+                    'currency' => 'usd',
+                    'setup_future_usage' => 'on_session',
+                    'metadata' => [
+                        'user_id' => (string) $request->user()->id
+                    ],
+                    'customer' => $request->user()->stripe_id
+                ]);
+
+                session()->put($key, $paymentIntent);
+                session()->save();
+            }
+
 
             return view('subscriptions.lifetime-payment', ['paymentIntent' => $paymentIntent]);
         }

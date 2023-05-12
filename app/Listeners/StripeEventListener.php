@@ -21,10 +21,10 @@ class StripeEventListener
      */
     public function handle(WebhookReceived $event): void
     {
-//            $payload['data']['object']["charges"]['data']["metadata"]['user_id'] ?? null
         $payload = $event->payload;
         if ($payload['type'] === 'payment_intent.succeeded') {
             $userId = Arr::get($payload, 'data.object.charges.data.0.metadata.user_id');
+            session()->forget("users.$userId.payment_intent");
             info($userId);
             if ($userId) {
                 info('test');
@@ -32,6 +32,7 @@ class StripeEventListener
                     'is_lifetime' => true
                 ]);
             }
+            session()->save();
         }
     }
 }
